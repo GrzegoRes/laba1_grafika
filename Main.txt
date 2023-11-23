@@ -1,0 +1,73 @@
+5. shaderID = glCreateShader(shaderKind);
+6. glShaderSource(shaderID, 1, (const GLchar**)&shString, NULL);
+7. glCompileShader(shaderID);
+8. glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
+9. if (success != GL_TRUE)
+	{
+	glGetShaderInfoLog(shaderID, MAX_INFO_LOG_SIZE, NULL, infoLog);
+	FatalError("COMPILATION", "Error while compiling shader.", infoLog);
+	}
+11. vShader[shaderNum] = LoadAndCompileShader(fullFileName, GL_VERTEX_SHADER);
+12. sprintf(fullFileName, "./shaders/%s.fs", shaderNames[shaderNum]);
+13. fShader[shaderNum] = LoadAndCompileShader(fullFileName, GL_FRAGMENT_SHADER);
+14. progObj[shaderNum] = glCreateProgram();
+15. glAttachShader(progObj[shaderNum], vShader[shaderNum]);
+16. glAttachShader(progObj[shaderNum], fShader[shaderNum]);
+17. glLinkProgram(progObj[shaderNum]);
+18. glGetProgramiv(progObj[shaderNum], GL_LINK_STATUS, &success);
+19. if (success != GL_TRUE)
+	{
+	glGetShaderInfoLog(progObj[shaderNum], MAX_INFO_LOG_SIZE, NULL, infoLog);
+	FatalError("SHADER LINKING", "Unable to link.", infoLog);
+	}
+20. needsValidation[shaderNum] = GL_TRUE;
+29. uniformLoc = glGetUniformLocation(progObj[actualShader], "lightPos[0]");
+30. if (uniformLoc != -1)
+	{
+	glUniform3fv(uniformLoc, 1, lightPos0Eye);
+	}
+41.uniformLoc = glGetUniformLocation(progObj[actualShader], "lightPos[1]");
+   if (uniformLoc != -1)
+	{
+	glUniform3fv(uniformLoc, 1, lightPos1Eye);
+	}
+20. if (needsValidation[actualShader])
+{
+21. glValidateProgram(progObj[actualShader]);
+22. glGetProgramiv(progObj[actualShader], GL_VALIDATE_STATUS, &success);
+23. if (success != GL_TRUE)
+    	{
+	glGetShaderInfoLog(progObj[actualShader], MAX_INFO_LOG_SIZE, NULL, infoLog);
+	FatalError("SHADER VALIDATION", "Unable to validate.", infoLog);
+	} 
+24.needsValidation[actualShader] = GL_FALSE;
+4. if (!GLEE_VERSION_2_0 && (!GLEE_ARB_fragment_shader || !GLEE_ARB_vertex_shader ||
+	!GLEE_ARB_shader_objects || !GLEE_ARB_shading_language_100))
+	FatalError("OpenGL version", "OpenGL version", "earlier then 2.0");
+25. 	for (int i = 0; i < SHADERS_NUM; i++)
+		PrepareShader(i);
+26.glUseProgram(progObj[actualShader]);
+27.glUseProgram(progObj[actualShader]);
+26. for (i = 0; i < SHADERS_NUM; i++)
+{
+	glDeleteProgram(progObj[i]);
+	glDeleteShader(vShader[i]);
+	glDeleteShader(fShader[i]);
+}
+
+Defuse
+FS
+void main( void )
+{
+   float intensity = max(0.0, dot(normalize(N), normalize(L[0])));
+   gl_FragColor = gl_Color; // primary color copying
+   gl_FragColor = gl_FragColor * intensity;
+}
+VS
+napoczatku dać
+vec4 V;
+ N = gl_NormalMatrix * gl_Normal;
+	V = gl_ModelViewMatrix * gl_Vertex;
+	L[0] = lightPos[0] - V.xyz;
+
+
